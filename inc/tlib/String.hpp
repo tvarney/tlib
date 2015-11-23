@@ -35,10 +35,20 @@ namespace tlib {
             mData(std::forward<std::basic_string<char>>(source.mData))
         { }
         
+        Utf8String(const std::basic_string<char> &str) :
+            mData(str)
+        { }
+        Utf8String(std::basic_string<char> &&str) :
+            mData(std::forward<std::basic_string<char>>(str))
+        { }
+        
         /**
          * \brief Create a Utf8String copy of the given c-string data.
          */
-        Utf8String(const char *cstr, std::locale loc = std::locale()) :
+        Utf8String(const char *cstr) :
+            Utf8String(cstr, std::locale())
+        { }
+        Utf8String(const char *cstr, std::locale loc) :
             mData(boost::locale::normalize(cstr,
                                            boost::locale::norm_default,
                                            loc))
@@ -332,6 +342,11 @@ namespace tlib {
             return Utf8String(boost::locale::fold_case(mData, loc));
         }
         
+        /**
+         * \brief Return a const reference to the underlying std::string
+         * 
+         * \returns A const reference to the underlying std::string
+         */
         const std::basic_string<char> & stdstring() const {
             return mData;
         }
@@ -343,11 +358,52 @@ namespace tlib {
         std::basic_string<char> mData;
     };
     
-    template <typename ostream, typename alloc>
-    ostream & operator<<(ostream &out, const Utf8String<alloc> &str) {
-        return out << str.stdstring();
+    /**
+     * \brief Check equality of the two Utf8Strings
+     * \param lhs The Utf8String on the left of the operator==
+     * \param rhs The Utf8String on the right of the operator==
+     * \return True if the two Utf8String instances collate to the same thing
+     */
+    template <typename AllocA, typename AllocB>
+    bool operator==(const Utf8String<AllocA> &lhs,
+                    const Utf8String<AllocB> &rhs)
+    {
+        //return (0 == use_facet<collator<char> >(loc).compare(collator_base::secondary,lhs,rhs));
+        return lhs.stdstring() == rhs.stdstring();
     }
     
+    /**
+     * \brief Compare a cstring and a Utf8String for equality
+     */
+    template <typename Alloc>
+    bool operator==(const char *cstr, const Utf8String<Alloc> &rhs) {
+        return std::string(cstr) == rhs.stdstring();
+    }
+    /**
+     * \brief Compare a Utf8String and a cstring for equality
+     */
+    template <typename Alloc>
+    bool operator==(const Utf8String<Alloc> &lhs, const char *rhs) {
+        return lhs.stdstring() == std::string(rhs);
+    }
+    
+    template <typename AllocA, typename AllocB>
+    bool operator==(const std::basic_string<char, AllocA> &lhs,
+                    const Utf8String<AllocB> &rhs)
+    {
+        return lhs == rhs.stdstring();
+    }
+    template <typename AllocA, typename AllocB>
+    bool operator==(const Utf8String<AllocA> &lhs,
+                    const std::basic_string<char, AllocB> &rhs)
+    {
+        return lhs.stdstring() == rhs;
+    }
+    
+    //template <typename ostream, typename alloc>
+    //ostream & operator<<(ostream &out, const Utf8String<alloc> &str) {
+    //    return out << str.stdstring();
+    //}
     
     typedef Utf8String<std::allocator<char>> U8String;
 }

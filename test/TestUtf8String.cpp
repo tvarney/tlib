@@ -56,3 +56,16 @@ TEST(Utf8StringTest, combining) {
     EXPECT_EQ(2, str.length());
     EXPECT_EQ(3, str.size());
 }
+
+TEST(Utf8StringTest, upper0) {
+    boost::locale::generator gen;
+    std::locale::global(gen(""));
+    
+    tlib::U8String str("hello ß");
+    
+    //std::cout << str << std::endl;
+    
+    EXPECT_EQ(true, (str == "hello ß"));
+    EXPECT_EQ(true, (str.upper() == "HELLO SS"));
+    EXPECT_EQ(str, "hello ß");
+}
