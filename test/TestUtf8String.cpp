@@ -52,8 +52,6 @@ TEST(Utf8StringTest, combining) {
     //   size() == 3
     tlib::U8String str("e\u0333");
     
-    inspect(str);
-    
     EXPECT_EQ(1, str.characters());
     EXPECT_EQ(2, str.length());
     EXPECT_EQ(3, str.size());
