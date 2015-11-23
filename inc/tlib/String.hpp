@@ -104,17 +104,18 @@ namespace tlib {
             size_t bsize = mData.size();
             size_t count = 0;
             for(size_t i = 0; i < bsize; ) {
-                if((i & 0x80) == 0) {
+                auto ch = mData.at(i);
+                if((ch & 0x80) == 0) {
                     i += 1;
-                }else if((i & 0xE0) == 0xC0) {
+                }else if((ch & 0xE0) == 0xC0) {
                     i += 2;
-                }else if((i & 0xF0) == 0xE0) {
+                }else if((ch & 0xF0) == 0xE0) {
                     i += 3;
-                }else if((i & 0xF8) == 0xF0) { //< TODO: Test this
+                }else if((ch & 0xF8) == 0xF0) { //< TODO: Test this
                     i += 4;
-                }else if((i & 0xFC) == 0xF8) { //< TODO: Test this
+                }else if((ch & 0xFC) == 0xF8) { //< TODO: Test this
                     i += 5;
-                }else if((i & 0xFE) == 0xFC) { //< TODO: Test this
+                }else if((ch & 0xFE) == 0xFC) { //< TODO: Test this
                     i += 6;
                 }else {
                     //TODO: Error, this is not a valid utf-8 encoded string
